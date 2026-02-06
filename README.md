@@ -1,94 +1,73 @@
 # TaskMaster Pro - SaaS Task Management API MVP
 
-A professional-grade Node.js REST API for task management, built with Clean Architecture principles and Cursor AI. This project demonstrates how to leverage AI tools to design and implement a scalable microservice MVP.
+A professional Node.js REST API for task management, built with Clean Architecture and Cursor AI.
 
-## 🎯 Project Overview
+## 🚀 Quick Start
 
-**TaskMaster Pro** is a minimal viable product (MVP) for a corporate task management tool. It showcases:
-
-- ✅ Clean Architecture with proper separation of concerns
-- ✅ Strong TypeScript typing throughout the codebase
-- ✅ SQLite database with Prisma ORM for data persistence
-- ✅ RESTful API with comprehensive CRUD operations
-- ✅ Input validation using Zod schemas
-- ✅ Global error handling with proper HTTP status codes
-- ✅ Professional documentation and code structure
-- ✅ Jest testing framework setup
-
-## 🛠️ Tech Stack
-
-- **Runtime**: Node.js
-- **Language**: TypeScript (strict mode)
-- **Framework**: Express.js
-- **Database**: SQLite with Prisma ORM
-- **Validation**: Zod
-- **Testing**: Jest
-- **Development**: ts-node-dev for hot reloading
-
-## 📋 Prerequisites
-
-- Node.js 18.x or higher
-- npm or yarn package manager
-
-## 🚀 Getting Started
-
-### 1. Install Dependencies
-
+### 1. Install & Setup (1 minute)
 ```bash
 npm install
-```
-
-### 2. Setup Environment
-
-Copy the example environment file:
-
-```bash
-cp .env.example .env
-```
-
-The default configuration uses SQLite locally:
-
-```
-PORT=3000
-NODE_ENV=development
-DATABASE_URL="file:./dev.db"
-```
-
-### 3. Setup Database
-
-Generate Prisma client and run migrations:
-
-```bash
-npx prisma generate
 npx prisma migrate dev
 ```
 
-This creates the SQLite database and initializes the schema.
-
-### 4. Start Development Server
-
+### 2. Start Server
 ```bash
 npm run dev
 ```
 
-The API will be available at `http://localhost:3000`
+Server: **http://localhost:3000**
 
-### 5. Check API Health
-
+### 3. Test API
 ```bash
 curl http://localhost:3000/health
 ```
 
-Expected response:
+## 📚 API Examples
 
-```json
-{
-  "success": true,
-  "data": {
-    "status": "OK"
-  }
-}
+**Create Task:**
+```bash
+curl -X POST http://localhost:3000/api/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Buy groceries", "description": "Milk, eggs, bread"}'
 ```
+
+**List Tasks:**
+```bash
+curl http://localhost:3000/api/tasks
+```
+
+**Get One Task:**
+```bash
+curl http://localhost:3000/api/tasks/{TASK_ID}
+```
+
+**Update Task:**
+```bash
+curl -X PUT http://localhost:3000/api/tasks/{TASK_ID} \
+  -H "Content-Type: application/json" \
+  -d '{"status": "COMPLETED"}'
+```
+
+**Delete Task:**
+```bash
+curl -X DELETE http://localhost:3000/api/tasks/{TASK_ID}
+```
+
+**Filter by Status:**
+```bash
+curl http://localhost:3000/api/tasks/filter/by-status?status=PENDING
+```
+
+## 📋 Endpoints
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| POST | `/api/tasks` | Create task |
+| GET | `/api/tasks` | List all tasks |
+| GET | `/api/tasks/:id` | Get one task |
+| PUT | `/api/tasks/:id` | Update task |
+| DELETE | `/api/tasks/:id` | Delete task |
+| GET | `/api/tasks/filter/by-status?status=PENDING` | Filter by status |
 
 ## 📚 API Documentation
 
@@ -372,122 +351,140 @@ task-api/
 └── README.md                 # This file
 ```
 
-## 🤖 How This Was Built with Cursor AI
+## 🤖 Cursor AI Prompts Used
 
-### Step 1: Setup and Context
-**Prompt Used:**
+### Prompt 1: Project Setup & Rules
 ```
-Generate rules for this project: use Clean Architecture, strong typing, and 
-professional documentation standards. Create a .cursorrules file that enforces 
-REST API best practices, TypeScript strict mode, and proper folder structure.
-```
-
-**Result:** Created `.cursorrules` file defining architecture patterns, naming conventions, and coding standards.
-
-### Step 2: Data Modeling
-**Prompt Used:**
-```
-Create a data model in SQLite using Prisma ORM for a task app with fields:
-- id (primary key)
-- title (required, text)
-- description (optional, large text)
-- status (enum: pending/completed)
-- creation date (auto-generated)
-- update date (auto-updated)
-
-Add proper indexes and relationships.
+Generate a .cursorrules file for a professional Node.js API project.
+Include: Clean Architecture, strict TypeScript, proper folder structure,
+naming conventions (PascalCase classes, camelCase functions), and RESTful 
+API best practices. All controllers should handle HTTP requests, services 
+should contain business logic, and middleware should handle cross-cutting concerns.
 ```
 
-**Result:** Generated `prisma/schema.prisma` with:
-- Task model with all required fields
-- Proper enum for TaskStatus
-- Indexes on status and createdAt for query performance
+**Result:** Created `.cursorrules` file with architecture rules and coding standards.
 
-### Step 3: CRUD and Business Logic
-**Prompt Used:**
+---
+
+### Prompt 2: Database Schema with Prisma
 ```
-Generate API endpoints to manage tasks with:
-- Create a new task (POST)
-- Get all tasks with filtering by status
-- Get single task by ID
-- Update task
-- Delete task
-Include comprehensive data validation and global error handling middleware.
-Also create a function to filter tasks by status.
+Create a Prisma schema for a task management application with:
+- Task model with fields: id (cuid), title (required string), 
+  description (optional string), status (PENDING/COMPLETED enum), 
+  createdAt and updatedAt timestamps
+- Add indexes on status and createdAt for query performance
+- Include TaskStatus enum
+- Add JSDoc comments for all fields
 ```
 
-**Result:** Complete CRUD implementation with:
-- TaskService with all business logic
-- TaskController with 6 endpoints
-- Zod validation schemas
-- Error handling middleware
-- Proper HTTP status codes
+**Result:** Generated `prisma/schema.prisma` with optimized schema and indexes.
 
-### Step 4: Validation & Error Handling
-**Prompt Used:**
+---
+
+### Prompt 3: TypeScript Type Definitions
 ```
-Add input validation to all endpoints using Zod. Create schemas for:
-- Creating tasks (title required, description optional)
-- Updating tasks (all fields optional)
-- Filtering tasks (status, pagination)
+Create TypeScript interfaces in src/types/:
+- Task interface matching Prisma model
+- CreateTaskInput (title required, description optional)
+- UpdateTaskInput (all fields optional)
+- TaskFilterOptions (status filter, pagination with limit/offset)
+- ApiResponse<T> generic wrapper for consistent responses
+- PaginatedResponse<T> for paginated endpoints
 
-Also implement centralized error handling that catches async errors
-and returns consistent JSON responses.
+Export each from appropriate type files with JSDoc comments.
 ```
 
-**Result:**
-- Zod schemas in `src/utils/validation.ts`
-- ApiError class for structured errors
-- Error handling middleware for global error catching
-- Async handler wrapper for route handlers
+**Result:** Type-safe API contracts in `src/types/task.types.ts` and `src/types/api.types.ts`.
+
+---
+
+### Prompt 4: Input Validation with Zod
+```
+Create Zod validation schemas in src/utils/validation.ts:
+- createTaskSchema: title (required, 1-200 chars), description (optional, max 5000)
+- updateTaskSchema: all fields optional with same constraints
+- taskFilterSchema: status enum, limit (1-100, default 10), offset (min 0, default 0)
+
+Also create global error handling middleware that:
+- Catches async errors in route handlers
+- Returns consistent JSON error responses
+- Uses proper HTTP status codes (400 for validation, 404 for not found, 500 for server)
+- Doesn't expose stack traces in production
+```
+
+**Result:** Complete validation and error handling in `src/middleware/errorHandler.ts`.
+
+---
+
+### Prompt 5: Service Layer (Business Logic)
+```
+Create TaskService class in src/services/task.service.ts that:
+- Takes PrismaClient in constructor
+- Has methods: createTask, getTaskById (throw 404 if not found), 
+  listTasks with pagination/filtering, updateTask, deleteTask, 
+  getTasksByStatus
+- Uses Prisma for database operations
+- Throws ApiError for errors
+- Orders results by createdAt descending
+- Includes JSDoc comments for each method
+```
+
+**Result:** Enterprise-grade business logic layer with proper error handling.
+
+---
+
+### Prompt 6: Controllers & HTTP Handlers
+```
+Create TaskController class in src/controllers/task.controller.ts that:
+- Takes PrismaClient and initializes TaskService
+- Has methods for each CRUD operation (createTask, getTask, listTasks, 
+  updateTask, deleteTask, getTasksByStatus)
+- Uses asyncHandler to wrap async methods and catch errors
+- Validates input with Zod schemas
+- Uses TaskService for business logic
+- Returns ApiResponse with proper HTTP status (201 for create, 200 for others)
+- Includes success messages on create/update/delete
+- Binds methods to instance (arrow functions)
+```
+
+**Result:** Clean HTTP handler layer in `src/controllers/task.controller.ts`.
+
+---
+
+### Prompt 7: Routes & Server Setup
+```
+Create:
+1. src/routes/task.routes.ts - Router factory function that creates 
+   Express routes for all CRUD endpoints
+2. src/index.ts - Express server setup that:
+   - Initializes Express app and PrismaClient
+   - Uses express.json() and express.urlencoded() middleware
+   - Mounts routes at /api/tasks
+   - Has /health endpoint returning {status: "OK"}
+   - Adds global error handling middleware
+   - Handles graceful shutdown on SIGINT
+   - Loads config from src/config/config.ts
+   - Listens on PORT from environment
+```
+
+**Result:** Working API server with proper middleware order and graceful shutdown.
+
+---
 
 ## 💡 Key Features
 
-### Clean Architecture
-
-The project follows Clean Architecture principles:
-
-- **Controllers**: Handle HTTP requests/responses
-- **Services**: Contain business logic
-- **Types**: Define data structures
-- **Middleware**: Cross-cutting concerns
-- **Utils**: Helper functions
-
-### Type Safety
-
-- Strict TypeScript configuration enabled
-- All functions have explicit types
-- No `any` types used
-- Interfaces for all data structures
-
-### Data Validation
-
-- Zod schemas for all inputs
-- Custom error messages
-- Length limits on text fields
-- Enum validation for status
-
-### Error Handling
-
-- Structured error responses
-- Proper HTTP status codes
-- Request validation errors (400)
-- Resource not found (404)
-- Server errors (500)
-
-### Database Efficiency
-
-- Indexed fields for fast queries
-- Pagination support for large datasets
-- Proper relationships and constraints
-- SQLite for lightweight deployment
+✅ **Clean Architecture** - Separated concerns (controllers, services, routes)  
+✅ **Type Safe** - Strict TypeScript, no `any` types  
+✅ **Validated** - Zod schemas on all inputs  
+✅ **Error Handling** - Consistent error responses  
+✅ **Professional** - Production-ready code patterns  
+✅ **Testable** - Jest setup included  
 
 ## 📖 API Response Format
 
-All responses follow a consistent format:
+All responses follow this format:
 
-**Success Response:**
-
+**Success:**
 ```json
 {
   "success": true,
@@ -496,8 +493,7 @@ All responses follow a consistent format:
 }
 ```
 
-**Error Response:**
-
+**Error:**
 ```json
 {
   "success": false,
@@ -505,161 +501,52 @@ All responses follow a consistent format:
 }
 ```
 
-**Paginated Response:**
-
+**Paginated:**
 ```json
 {
   "success": true,
-  "data": [ /* array of items */ ],
+  "data": [ /* items */ ],
   "total": 42,
   "limit": 10,
   "offset": 0
 }
 ```
 
-## 🐛 Error Handling Examples
-
-### Validation Error (400 Bad Request)
-
-**Request:**
-
-```bash
-curl -X POST http://localhost:3000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{"title": ""}'
-```
-
-**Response:**
-
-```json
-{
-  "success": false,
-  "error": "Title is required"
-}
-```
-
-### Not Found Error (404)
-
-**Request:**
-
-```bash
-curl http://localhost:3000/api/tasks/invalid-id
-```
-
-**Response:**
-
-```json
-{
-  "success": false,
-  "error": "Task with ID invalid-id not found"
-}
-```
-
-## 🔐 Security Features
+## 🔐 Security
 
 - Input validation on all endpoints
-- Proper error messages (no stack traces in production)
-- Environment variables for configuration
-- SQL injection prevention via Prisma ORM
-- Type safety prevents many runtime errors
+- No stack traces in production errors
+- SQL injection prevention via Prisma
+- Type safety prevents runtime errors
+- Environment variables for secrets
 
-## 📝 Database Schema
+## 🏗️ Tech Stack
 
-### Task Model
+- **Runtime**: Node.js
+- **Language**: TypeScript (strict mode)
+- **Framework**: Express.js
+- **Database**: SQLite + Prisma ORM
+- **Validation**: Zod
+- **Testing**: Jest
+- **Dev**: ts-node-dev
 
-```prisma
-model Task {
-  id          String   @id @default(cuid())
-  title       String   @db.Text
-  description String?  @db.Text
-  status      TaskStatus @default(PENDING)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@index([status])
-  @@index([createdAt])
-}
+## 📝 Note
 
-enum TaskStatus {
-  PENDING
-  COMPLETED
-}
-```
+This project demonstrates how to use **Cursor AI effectively** to build enterprise applications:
 
-## 🚂 Migration Workflow
+1. ✅ Define project rules upfront (`.cursorrules`)
+2. ✅ Generate database schema iteratively
+3. ✅ Create type definitions before implementation
+4. ✅ Add validation at the boundaries
+5. ✅ Build service layer with business logic
+6. ✅ Implement controllers as HTTP handlers
+7. ✅ Wire everything together with routes
 
-When you make schema changes:
-
-```bash
-# Update prisma/schema.prisma
-
-# Create a migration
-npx prisma migrate dev --name describe_change
-
-# This will:
-# 1. Create SQL migration files
-# 2. Apply changes to database
-# 3. Regenerate Prisma Client
-```
-
-## 📊 Example Usage Flow
-
-### Create multiple tasks
-
-```bash
-curl -X POST http://localhost:3000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Task 1", "description": "First task"}'
-
-curl -X POST http://localhost:3000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Task 2", "description": "Second task"}'
-```
-
-### Mark as completed
-
-```bash
-curl -X PUT http://localhost:3000/api/tasks/[TASK_ID] \
-  -H "Content-Type: application/json" \
-  -d '{"status": "COMPLETED"}'
-```
-
-### Filter completed tasks
-
-```bash
-curl "http://localhost:3000/api/tasks/filter/by-status?status=COMPLETED"
-```
-
-## 🎓 Learning Resources
-
-- [Prisma Documentation](https://www.prisma.io/docs/)
-- [Express.js Guide](https://expressjs.com/)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Zod Documentation](https://zod.dev)
-- [REST API Best Practices](https://restfulapi.net/)
-
-## 🚀 Next Steps for Production
-
-To extend this MVP for production:
-
-1. **Add Authentication**: JWT tokens, OAuth2
-2. **Add Authorization**: Role-based access control (RBAC)
-3. **Add Logging**: Structured logging (Winston, Pino)
-4. **Add Rate Limiting**: Prevent abuse
-5. **Add CORS**: Proper cross-origin handling
-6. **Add Caching**: Redis for performance
-7. **Add Monitoring**: APM tools, error tracking
-8. **Add Tests**: Comprehensive unit and integration tests
-9. **Add CI/CD**: Automated testing and deployment
-10. **Add Documentation**: OpenAPI/Swagger specs
+Each prompt is focused, incremental, and builds upon previous work.
 
 ## 📄 License
 
 ISC
-
-## 👨‍💻 Author
-
-Built with Cursor AI assistance demonstrating modern Node.js API development practices.
 
 ---
 
