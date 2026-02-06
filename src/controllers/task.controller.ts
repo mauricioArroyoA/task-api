@@ -10,7 +10,9 @@ import {
 import { ApiResponse, PaginatedResponse } from "../types/api.types";
 import { Task } from "../types/task.types";
 
-
+/**
+ * Controller for task endpoints, following RESTful conventions with precise HTTP status codes.
+ */
 export class TaskController {
   private taskService: TaskService;
 
@@ -18,6 +20,10 @@ export class TaskController {
     this.taskService = new TaskService(prisma);
   }
 
+  /**
+   * Create a new task.
+   * Status: 201 Created
+   */
   createTask = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const validatedData = createTaskSchema.parse(req.body);
     const task = await this.taskService.createTask(validatedData);
@@ -30,6 +36,10 @@ export class TaskController {
     res.status(201).json(response);
   });
 
+  /**
+   * Get a task by ID.
+   * Status: 200 OK, 404 Not Found if task doesn't exist
+   */
   getTask = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
 
@@ -39,6 +49,11 @@ export class TaskController {
 
     const task = await this.taskService.getTaskById(id as string);
 
+    if (!task) {
+      // Explicitly returning 404 if the task is not found
+      throw new ApiError(404, "Task not found");
+    }
+
     const response: ApiResponse<Task> = {
       success: true,
       data: task,
@@ -46,6 +61,10 @@ export class TaskController {
     res.status(200).json(response);
   });
 
+  /**
+   * List tasks with filters and pagination.
+   * Status: 200 OK
+   */
   listTasks = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const validatedFilters = taskFilterSchema.parse(req.query);
     const tasks = await this.taskService.listTasks(validatedFilters);
@@ -61,6 +80,10 @@ export class TaskController {
     res.status(200).json(response);
   });
 
+  /**
+   * Update a task.
+   * Status: 200 OK if updated, 404 Not Found if task doesn't exist
+   */
   updateTask = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
 
@@ -71,6 +94,10 @@ export class TaskController {
     const validatedData = updateTaskSchema.parse(req.body);
     const task = await this.taskService.updateTask(id as string, validatedData);
 
+    if (!task) {
+      throw new ApiError(404, "Task not found");
+    }
+
     const response: ApiResponse<Task> = {
       success: true,
       data: task,
@@ -79,6 +106,10 @@ export class TaskController {
     res.status(200).json(response);
   });
 
+  /**
+   * Delete a task.
+   * Status: 204 No Content if deleted, 404 Not Found if not found
+   */
   deleteTask = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
 
@@ -88,14 +119,18 @@ export class TaskController {
 
     const task = await this.taskService.deleteTask(id as string);
 
-    const response: ApiResponse<Task> = {
-      success: true,
-      data: task,
-      message: "Task deleted successfully",
-    };
-    res.status(200).json(response);
+    if (!task) {
+      throw new ApiError(404, "Task not found");
+    }
+
+    // 204 No Content with no body per RESTful convention
+    res.status(204).send();
   });
 
+  /**
+   * Get tasks by status filter.
+   * Status: 200 OK
+   */
   getTasksByStatus = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { status } = req.query;
 
