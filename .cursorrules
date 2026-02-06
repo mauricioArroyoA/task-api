@@ -1,0 +1,87 @@
+# TaskMaster Pro - Cursor AI Rules
+
+## Project Overview
+Building a professional SaaS task management API MVP using Node.js, Express, TypeScript, and Prisma ORM.
+
+## Architecture Principles
+- **Clean Architecture**: Separate concerns into layers (controllers, services, repositories)
+- **Type Safety**: Strict TypeScript configuration, no `any` types
+- **Validation**: Input validation on all endpoints using Zod
+- **Error Handling**: Centralized error handling with proper HTTP status codes
+- **Database**: SQLite with Prisma ORM for data persistence
+
+## Coding Standards
+
+### TypeScript
+- Use strict mode (`strict: true`)
+- Define explicit types for all functions and variables
+- Use interfaces over types when designing object structures
+- Avoid `any` - use generics or union types instead
+- Create dedicated type files in `types/` directory
+
+### Naming Conventions
+- routes: `*.routes.ts`
+- controllers: `*.controller.ts`
+- services: `*.service.ts`
+- types/interfaces: `*.types.ts`
+- middleware: `*.middleware.ts`
+- PascalCase for class and interface names
+- camelCase for variables and functions
+
+### Folder Structure
+```
+src/
+  ├── controllers/     # HTTP request handlers
+  ├── services/        # Business logic
+  ├── routes/          # API route definitions
+  ├── middleware/      # Express middleware
+  ├── types/           # TypeScript types & interfaces
+  ├── utils/           # Helper functions
+  ├── config/          # Configuration files
+  └── index.ts         # Application entry point
+prisma/
+  └── schema.prisma    # Database schema
+.env                   # Environment variables
+```
+
+### API Conventions
+- Use RESTful principles (GET, POST, PUT, DELETE)
+- Return JSON responses with consistent structure: `{ success: boolean, data?: T, error?: string }`
+- Use appropriate HTTP status codes (200, 201, 400, 404, 500)
+- Version endpoints if needed: `/api/v1/tasks`
+
+### Database & ORM
+- Use Prisma for all database operations
+- Define models with proper relationships
+- Use migrations for schema changes
+- Keep database queries in services layer
+
+## Documentation Requirements
+- JSDoc comments on all exported functions
+- README with setup instructions and API documentation
+- Comments explaining complex business logic
+- Example `.env` file with all required variables
+
+## Testing Standards
+- Unit tests for services and utilities
+- Integration tests for API endpoints
+- Use Jest as testing framework
+- Aim for 80%+ code coverage on critical paths
+
+## Git & Version Control
+- Commit messages: `type(scope): description`
+- Types: feat, fix, docs, style, refactor, test
+- Example: `feat(tasks): add task filtering by status`
+
+## Performance Considerations
+- Index frequently queried fields in database
+- Use pagination for list endpoints
+- Implement rate limiting for APIs
+- Cache responses when appropriate
+
+## Security
+- Validate and sanitize all inputs
+- Use environment variables for secrets
+- Implement proper error messages (no stack traces in production)
+- CORS configuration for API access
+- Input length validation to prevent abuse

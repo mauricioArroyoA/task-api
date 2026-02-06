@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Task model representing a task in the system
+model Task {
+  /// Unique identifier for the task
+  id        String   @id @default(cuid())
+  
+  /// Task title
+  title     String
+  
+  /// Detailed description of the task
+  description String?
+  
+  /// Task status: pending or completed
+  status    TaskStatus @default(PENDING)
+  
+  /// When the task was created
+  createdAt DateTime @default(now())
+  
+  /// When the task was last updated
+  updatedAt DateTime @updatedAt
+  
+  @@index([status])
+  @@index([createdAt])
+}
+
+/// Enum for task status values
+enum TaskStatus {
+  PENDING
+  COMPLETED
+}
